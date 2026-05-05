@@ -12,7 +12,8 @@ format: html
 
 library(tidyverse)
 library(here)
-library(snakecase) # inside this package is a function that can help turn column names into snakecase"
+# library(snakecase) # inside this package is a function that can help turn column names into "snakecase" -> used in the read function we made
+source(here("R/functions.R"))
 ```
 
 
@@ -22,6 +23,7 @@ name_repair = to_snake_case = helps convert the column names to snakecase (bette
 
 n_max is used to tell how many rows to import. might be useful for larger dataset to get a view of the data
 ```{r}
+#| eval: false
 # Code chunk
 
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
@@ -35,13 +37,13 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
 ## Exercise: Reading other files
 
 ```{r}
+#| eval: false
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
   read_csv(
     show_col_types = FALSE,
     name_repair = to_snake_case,
     # n_max = 100
   )
-
 
 here("data-raw/nurses-stress/stress/6B/6B_1587585327/HR.csv.gz") %>%
   read_csv(
@@ -72,6 +74,7 @@ add_numbers <- function(num1, num2) {
 ## create a function to import data
 
 ```{r}
+#| eval: false
 #' Read in nurses' stress data file
 #'
 #' @param file_path this is the oath to a data file
@@ -81,7 +84,7 @@ add_numbers <- function(num1, num2) {
 #' @returns outputs a dataframe/tibble
 read <- function(file_path, max_rows = 100) {
   data <- file_path %>%
-    readr::read_csv( #to explicitly tell R studio to use read_csv from readr package
+    readr::read_csv( # to explicitly tell R studio to use read_csv from readr package
       show_col_types = FALSE,
       name_repair = snakecase::to_snake_case,
       n_max = max_rows
