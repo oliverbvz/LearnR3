@@ -9,3 +9,4 @@
 .quarto
 *.html
 *_files
+data-raw/nurses-stress/

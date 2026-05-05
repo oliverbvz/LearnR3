@@ -8,8 +8,26 @@ format: html
 
 ```{r setup}
 #| include: false
+
+
+library(tidyverse)
+library(here)
+library(snakecase) # inside this package is a function that can help turn column names into snakecase"
 ```
 
+
+## Importing new data
+
+name_repair = to_snake_case = helps convert the column names to snakecase (better for readability)
+
+n_max is used to tell how many rows to import. might be useful for larger dataset to get a view of the data
 ```{r}
 # Code chunk
+
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") %>%
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case,
+    n_max = 100
+  )
 ```
