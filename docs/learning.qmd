@@ -138,20 +138,21 @@ hr_data
 #' Read_all ".csv.gz" files in the stress/ folder into one data frame
 #'
 #' @param filename give the filename we want to read in
+#' @param max_rows specify the number of rows it should load in
 #'
 #' @returns returns a table consisting of all files with the filename given as input
 
-read_all <- function(filename) {
+read_all <- function(filename, max_rows = 5) {
   files <- here::here("data-raw/nurses-stress/") %>%
     fs::dir_ls(regexp = filename, recurse = TRUE)
 
   data <- files %>%
-    purrr::map(read) %>%
+    purrr::map(read, max_rows) %>%
     purrr::list_rbind(names_to = "file_path_id")
 
   return(data)
 }
 
 
-read_all("HR.csv.gz")
+read_all("HR.csv.gz", max_rows = 2)
 ```

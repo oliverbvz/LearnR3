@@ -1,3 +1,7 @@
+# Global variables -----
+.DATASET_DIR <- here::here("data-raw/nurses-stress/")
+
+
 #' Read in nurses' stress data file
 #'
 #' @param file_path this is the oath to a data file
@@ -19,15 +23,16 @@ read <- function(file_path, max_rows = 10) {
 #' Read_all ".csv.gz" files in the stress/ folder into one data frame
 #'
 #' @param filename give the filename we want to read in
+#' @param max_rows specify the number of rows it should load in
 #'
 #' @returns returns a table consisting of all files with the filename given as input
 
-read_all <- function(filename) {
-  files <- here::here("data-raw/nurses-stress/") %>%
+read_all <- function(filename, max_rows = 10) {
+  files <- .DATASET_DIR %>%
     fs::dir_ls(regexp = filename, recurse = TRUE)
 
   data <- files %>%
-    purrr::map(read) %>%
+    purrr::map(\(file) read(file, max_rows = max_rows)) %>%
     purrr::list_rbind(names_to = "file_path_id")
 
   return(data)
