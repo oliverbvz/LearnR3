@@ -38,16 +38,19 @@ read_all <- function(filename, max_rows = 10) {
   return(data)
 }
 
-get_participant_id <- function(data) {
+#' get_participant_id function to get participant id extracted
+#'
+#' @param data input the data that needs to have ID extracted
+#'
+#' @returns A data frame with a new column with ID extracted file_path_id removed
+get_participant_id <- function(data){
   data_id <- data %>%
     dplyr::mutate(
       id = stringr::str_extract(
         file_path_id,
-        pattern = "/stress/[:alnum:]{2}/"
-      ) %>%
-        stringr::str_remove("/stress/") %>%
-        stringr::str_remove("/"),
-      .before = file_path_id # this argument in mutate is used to add the new column before the "file_path_id" column
+        pattern = "(?<=/stress/)[:alnum:]{2}(?=/)"
+      ),
+      .before = file_path_id #this argument in mutate is used to add the new column before the "file_path_id" column
     ) %>%
     dplyr::select(-file_path_id)
 

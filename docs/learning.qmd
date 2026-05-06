@@ -1,6 +1,6 @@
 ---
 title: "Draft Quarto document"
-author: "Your Name"
+author: "Oliver"
 format: html
 ---
 
@@ -117,6 +117,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") %>%
 ## using map()
 
 ```{r}
+#| eval: false
 hr_files <- here("data-raw/nurses-stress/") %>%
   dir_ls(regexp = "HR.csv.gz", recurse = TRUE)
 
@@ -161,7 +162,6 @@ read_all("HR.csv.gz", max_rows = 2)
 ## Inspecting the data
 
 ```{r}
-
 hr_data <- read_all("HR.csv.gz")
 
 survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
@@ -169,25 +169,22 @@ survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
 
 hr_data
 survey_data
-
 ```
 
 ## using regex for ID
 
 ```{r}
-
-hr_data %>% 
+hr_data %>%
   mutate(
     id = str_extract(
       file_path_id,
       pattern = "/stress/[:alnum:]{2}/"
-    ) %>% 
-      str_remove("/stress/") %>% 
+    ) %>%
+      str_remove("/stress/") %>%
       str_remove("/"),
-    .before = file_path_id #this argument in mutate is used to add the new column before the "file_path_id" column
-  ) %>% 
+    .before = file_path_id # this argument in mutate is used to add the new column before the "file_path_id" column
+  ) %>%
   select(-file_path_id)
-
 ```
 
 
@@ -198,22 +195,80 @@ hr_data %>%
 #' @param data input the data that needs to have ID extracted
 #'
 #' @returns A data frame with a new column with ID extracted file_path_id removed
-get_participant_id <- function(data){
-  data_id <- data %>% 
+get_participant_id <- function(data) {
+  data_id <- data %>%
     dplyr::mutate(
       id = stringr::str_extract(
-      file_path_id,
-      pattern = "/stress/[:alnum:]{2}/"
-    ) %>% 
-      stringr::str_remove("/stress/") %>% 
-      stringr::str_remove("/"),
-    .before = file_path_id #this argument in mutate is used to add the new column before the "file_path_id" column
-  ) %>% 
-  dplyr::select(-file_path_id)
-  
+        file_path_id,
+        pattern = "(?<=/stress/)[:alnum:]{2}(?=/)"
+      ),
+      .before = file_path_id # this argument in mutate is used to add the new column before the "file_path_id" column
+    ) %>%
+    dplyr::select(-file_path_id)
+
   return(data_id)
-  } 
-
-
+}
 ```
 
+## working with across()
+
+```{r}
+hr_data <- read_all("HR.csv.gz") %>%
+  get_participant_id()
+
+hr_data
+```
+
+
+
+functions inside a functions do not have (). see below with is.numeric as function
+
+```{r}
+hr_data %>%
+  summarise(across(where(is.numeric), list(
+    mean = mean,
+    meadian = median,
+    sd = sd,
+    minimum = min,
+    maximum = max
+  )))
+```
+
+
+## Working with dates
+
+```{r}
+hr_data %>%
+  mutate(
+    datetime = lubridate::round_date(collection_datetime,
+      unit = "minute"
+    ),
+    .before = collection_datetime
+  )
+```
+
+## Summarising by groups
+
+```{r}
+hr_data %>%
+  mutate(
+    collection_datetime = lubridate::round_date(collection_datetime,
+      unit = "minute"
+    )
+  ) %>%
+  summarise(
+    across(
+      where(is.numeric),
+      list(
+        mean = mean,
+        sd = sd,
+        median = median
+      )
+    ),
+    .by = c(id, collection_datetime)
+  )
+```
+
+
+
+## Exercise 20.6
