@@ -5,7 +5,7 @@
 #'
 #'
 #' @returns outputs a dataframe/tibble
-read <- function(file_path, max_rows = 100) {
+read <- function(file_path, max_rows = 10) {
   data <- file_path %>%
     readr::read_csv( #to explicitly tell R studio to use read_csv from readr package
       show_col_types = FALSE,
