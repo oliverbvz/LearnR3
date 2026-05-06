@@ -56,3 +56,32 @@ get_participant_id <- function(data){
 
   return(data_id)
 }
+
+
+#' summarised_data a function to summarise data by datetime
+#'
+#' @param data a data frame
+#'
+#' @returns a data with new collumns of mean, sd, and median per minute
+
+summarise_by_datetime <- function(data) {
+  summarised_data <- data %>%
+    dplyr::mutate(
+      collection_datetime = lubridate::round_date(collection_datetime,
+                                                  unit = "minute"
+      )
+    ) %>%
+    dplyr::summarise(
+      dplyr::across(
+        tidyselect::where(is.numeric),
+        list(
+          mean = mean,
+          sd = sd,
+          median = median
+        )
+      ),
+      .by = c(id, collection_datetime)
+    )
+
+  return(summarised_data)
+}
