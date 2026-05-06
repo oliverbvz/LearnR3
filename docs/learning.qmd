@@ -129,3 +129,29 @@ hr_data <- hr_files %>%
 
 hr_data
 ```
+
+
+## Exercise: Convert map to function and use on sleep
+
+```{r}
+#| eval: false
+#' Read_all ".csv.gz" files in the stress/ folder into one data frame
+#'
+#' @param filename give the filename we want to read in
+#'
+#' @returns returns a table consisting of all files with the filename given as input
+
+read_all <- function(filename) {
+  files <- here::here("data-raw/nurses-stress/") %>%
+    fs::dir_ls(regexp = filename, recurse = TRUE)
+
+  data <- files %>%
+    purrr::map(read) %>%
+    purrr::list_rbind(names_to = "file_path_id")
+
+  return(data)
+}
+
+
+read_all("HR.csv.gz")
+```

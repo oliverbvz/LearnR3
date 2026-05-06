@@ -6,7 +6,9 @@ Encoding: UTF-8
 URL: https://github.com/oliverbvz/preworkshop_intermediateRcourse
 BugReports: https://github.com/oliverbvz/preworkshop_intermediateRcourse/issues
 Imports: 
+    fs,
     here,
+    purrr,
     readr,
     snakecase
 Depends: 
