@@ -64,7 +64,7 @@ get_participant_id <- function(data){
 #'
 #' @returns a data with new collumns of mean, sd, and median per minute
 
-summarise_by_datetime <- function(data) {
+summarise_by_datetime <- function(data, unit) {
   summarised_data <- data %>%
     dplyr::mutate(
       collection_datetime = lubridate::round_date(collection_datetime,

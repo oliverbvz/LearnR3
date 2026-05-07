@@ -23,3 +23,14 @@ temp_data <- read_sensor_data("TEMP.csv.gz")
 bvp_data <- read_sensor_data("BVP.csv.gz")
 eda_data <- read_sensor_data("EDA.csv.gz")
 ```
+
+## Process survey data
+
+```{r}
+survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") %>%
+  read() %>%
+  tidy_survey_dates()
+
+survery_long <- survey_tidy %>%
+  survey_to_long()
+```
