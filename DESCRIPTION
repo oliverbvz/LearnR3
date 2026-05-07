@@ -15,5 +15,6 @@ Imports:
     snakecase,
     stringr
 Depends: 
+    tidyr,
     tidyselect,
     tidyverse

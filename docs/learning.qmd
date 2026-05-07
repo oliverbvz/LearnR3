@@ -305,3 +305,122 @@ summarise_by_datetime <- function(data) {
   return(summarised_data)
 }
 ```
+
+
+```{r}
+#| eval: false
+
+
+#' read_sensor_data a function to import sensor data from the nurses
+#'
+#' @param filename The filename for the data to be imported
+#'
+#' @returns a dataframe with summarised data
+
+read_sensor_data <- function(filename, max_rows = 100) {
+  data <- read_all(filename, max_rows = max_rows) %>%
+    get_participant_id() %>%
+    summarise_by_datetime()
+  return(data)
+}
+```
+
+## Pivot longer
+
+```{r}
+# reading in the survey data
+survey_data <-
+  here("data-raw/nurses-stress/survey-results.csv.gz") %>%
+  read()
+
+#
+survey_data
+```
+
+```{r}
+survey_tidy <- survey_data %>%
+  mutate(
+    date = lubridate::mdy(date),
+    start_datetime = lubridate::as_datetime(paste(date, start_time)),
+    end_datetime = lubridate::as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) %>%
+  select(-c(date, start_time, end_time, duration))
+```
+
+```{r}
+survey_tidy %>%
+  select(id, datetime_id, start_datetime, end_datetime) %>%
+  pivot_longer(
+    c(
+      start_datetime,
+      end_datetime
+    ),
+    names_to = NULL, # this removes the default column "name" that pivot_longer creates
+    values_to = "collection_datetime"
+  ) %>%
+  group_by(pick(-collection_datetime)) %>%
+  complete(
+    collection_datetime = seq(
+      min(collection_datetime),
+      max(collection_datetime),
+      by = 60
+    )
+  ) %>%
+  ungroup()
+```
+
+
+
+
+
+## Exercise 21.4
+```{r}
+#| eval: false
+#' tidy_survey_dates to tidy the survey data dates
+#'
+#' @param data survey data
+#'
+#' @returns a tidied dataframe with tidied and correct dates
+tidy_survey_dates <- function(data) {
+  tidied <- data %>%
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id = start_datetime,
+      .before = start_time
+    ) %>%
+    dplyr::select(-c(date, start_time, end_time, duration))
+
+  return(tidied)
+}
+```
+
+```{r}
+surver_to_long <- function(data) {
+  longer <- data %>%
+    select(id, datetime_id, start_datetime, end_datetime) %>%
+    pivot_longer(
+      c(
+        start_datetime,
+        end_datetime
+      ),
+      names_to = NULL, # this removes the default column "name" that pivot_longer creates
+      values_to = "collection_datetime"
+    ) %>%
+    group_by(pick(-collection_datetime)) %>%
+    complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) %>%
+    ungroup()
+
+
+  return
+}
+```

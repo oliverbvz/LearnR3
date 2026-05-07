@@ -85,3 +85,35 @@ summarise_by_datetime <- function(data) {
 
   return(summarised_data)
 }
+
+' read_sensor_data a function to import sensor data from the nurses
+#'
+#' @param filename The filename for the data to be imported
+#'
+#' @returns a dataframe with summarised data
+
+read_sensor_data <- function(filename, max_rows = 100, unit = "minute") {
+  data <- read_all(filename, max_rows = max_rows) %>%
+    get_participant_id() %>%
+    summarise_by_datetime(unit = unit)
+  return(data)
+}
+
+#' tidy_survey_dates to tidy the survey data dates
+#'
+#' @param data survey data
+#'
+#' @returns a tidied dataframe with tidied and correct dates
+tidy_survey_dates <- function(data){
+  tidied <- data %>%
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id =start_datetime,
+      .before = start_time) %>%
+    dplyr::select(-c(date, start_time, end_time, duration))
+
+  return(tidied)
+}
+
