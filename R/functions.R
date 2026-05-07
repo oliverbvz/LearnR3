@@ -126,10 +126,7 @@ survey_to_long <- function(data) {
   longer <- data %>%
     dplyr::select(id, datetime_id, start_datetime, end_datetime) %>%
     tidyr::pivot_longer(
-      c(
-        start_datetime,
-        end_datetime
-      ),
+      dplyr::ends_with("_datetime"),
       names_to = NULL, # this removes the default column "name" that pivot_longer creates
       values_to = "collection_datetime"
     ) %>%
