@@ -117,3 +117,32 @@ tidy_survey_dates <- function(data){
   return(tidied)
 }
 
+#' survey_to_long a function that formats data into long format
+#'
+#' @param data insert tidied survey datetime data
+#'
+#' @returns returns the survey data in a long format
+survey_to_long <- function(data) {
+  longer <- data %>%
+    dplyr::select(id, datetime_id, start_datetime, end_datetime) %>%
+    tidyr::pivot_longer(
+      c(
+        start_datetime,
+        end_datetime
+      ),
+      names_to = NULL, # this removes the default column "name" that pivot_longer creates
+      values_to = "collection_datetime"
+    ) %>%
+    dplyr::group_by(dplyr::pick(-collection_datetime)) %>%
+    tidyr::complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) %>%
+    dplyr::ungroup()
+
+
+  return(longer)
+}
