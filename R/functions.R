@@ -9,7 +9,7 @@
 #'
 #'
 #' @returns outputs a dataframe/tibble
-read <- function(file_path, max_rows = 100) {
+read <- function(file_path, max_rows = Inf) {
   data <- file_path %>%
     readr::read_csv( # to explicitly tell R studio to use read_csv from readr package
       show_col_types = FALSE,
@@ -27,7 +27,7 @@ read <- function(file_path, max_rows = 100) {
 #'
 #' @returns returns a table consisting of all files with the filename given as input
 
-read_all <- function(filename, max_rows = 10) {
+read_all <- function(filename, max_rows = Inf) {
   files <- .DATASET_DIR %>%
     fs::dir_ls(regexp = filename, recurse = TRUE)
 
@@ -92,7 +92,7 @@ summarise_by_datetime <- function(data, unit) {
 #'
 #' @returns a dataframe with summarised data
 
-read_sensor_data <- function(filename, max_rows = 100, unit = "minute") {
+read_sensor_data <- function(filename, max_rows = Inf, unit = "minute") {
   data <- read_all(filename, max_rows = max_rows) %>%
     get_participant_id() %>%
     summarise_by_datetime(unit = unit)
